@@ -139,7 +139,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .type-badge.pemasukan{background:var(--green-p);color:var(--green)}
 .type-badge.pengeluaran{background:var(--red-p);color:var(--red)}
 .type-badge.investasi{background:var(--orange-p);color:var(--orange)}
-.type-badge.agama{background:var(--teal-p);color:var(--teal)}
 .type-badge.keluarga{background:var(--pink-p);color:var(--pink)}
 .type-badge.cicilan{background:var(--indigo-p);color:var(--indigo)}
 
@@ -435,9 +434,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
               <button class="tb" id="bt-3" onclick="setType('Investasi')">📈 Investasi</button>
             </div>
             <div class="tg tg3" style="margin-top:6px">
-              <button class="tb" id="bt-4" onclick="setType('Agama')">🕌 Agama</button>
-              <button class="tb" id="bt-5" onclick="setType('Keluarga')">👨‍👩‍👧 Keluarga</button>
-              <button class="tb" id="bt-6" onclick="setType('Cicilan')">🏦 Cicilan</button>
+              <button class="tb" id="bt-4" onclick="setType('Keluarga')">👨‍👩‍👧 Keluarga</button>
+              <button class="tb" id="bt-5" onclick="setType('Cicilan')">🏦 Cicilan</button>
             </div>
           </div>
 
@@ -575,7 +573,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <button class="fc" onclick="setFil('t','Pemasukan',this)">↑ Masuk</button>
         <button class="fc" onclick="setFil('t','Pengeluaran',this)">↓ Keluar</button>
         <button class="fc" onclick="setFil('t','Investasi',this)">📈 Investasi</button>
-        <button class="fc" onclick="setFil('t','Agama',this)">🕌 Agama</button>
         <button class="fc" onclick="setFil('t','Keluarga',this)">👨‍👩‍👧 Keluarga</button>
         <button class="fc" onclick="setFil('t','Cicilan',this)">🏦 Cicilan</button>
       </div>
@@ -685,20 +682,20 @@ const db   = getFirestore(app);
 // ── CATEGORIES ─────────────────────────────────────────────
 const CATS = {
   Pemasukan:   ['Gaji','Bonus','Freelance','Bisnis','Investasi Return','Lainnya'],
-  Pengeluaran: ['Makan','Transportasi','Belanja','Tagihan','Kesehatan','Pendidikan','Hiburan','Perawatan','Lainnya'],
+  Pengeluaran: ['Makan','Transportasi','Belanja','Tagihan','Kesehatan','Pendidikan','Hiburan','Perawatan','Zakat Maal','Zakat Fitrah','Infaq','Sedekah','Wakaf','Qurban','Lainnya'],
   Investasi:   ['Emas','ETF','Sukuk','Reksa Dana','Obligasi','Deposito','Saham','Lainnya'],
-  Agama:       ['Zakat Maal','Zakat Fitrah','Infaq','Sedekah','Wakaf','Qurban','Lainnya'],
+  
   Keluarga:    ['Orang Tua','Saudara','Keponakan','Kado/Hadiah','Arisan','Lainnya'],
   Cicilan:     ['KPR','Kendaraan','Kartu Kredit','Pinjaman Bank','Pinjaman Pribadi','Lainnya'],
 };
 
 const TYPE_COLORS = {
   Pemasukan:'var(--green)',Pengeluaran:'var(--red)',Investasi:'var(--orange)',
-  Agama:'var(--teal)',Keluarga:'var(--pink)',Cicilan:'var(--indigo)'
+  Agama:'#8E44AD',Keluarga:'var(--pink)',Cicilan:'var(--indigo)'
 };
 const TYPE_BG = {
   Pemasukan:'var(--green-p)',Pengeluaran:'var(--red-p)',Investasi:'var(--orange-p)',
-  Agama:'var(--teal-p)',Keluarga:'var(--pink-p)',Cicilan:'var(--indigo-p)'
+  Agama:'#F5EEF8',Keluarga:'var(--pink-p)',Cicilan:'var(--indigo-p)'
 };
 const TYPE_ICO = {
   Pemasukan:'↑',Pengeluaran:'↓',Investasi:'📈',Agama:'🕌',Keluarga:'👨‍👩‍👧',Cicilan:'🏦'
@@ -711,6 +708,7 @@ const CAT_ICONS = {
   'Zakat Maal':'🕌','Zakat Fitrah':'🌙',Infaq:'🤲',Sedekah:'❤️',Wakaf:'🏛️',
   'Orang Tua':'👴',Saudara:'👫',Keponakan:'👶',Hadiah:'🎁',Arisan:'🤝',
   KPR:'🏠',Kendaraan:'🚗','Kartu Kredit':'💳','Pinjaman Bank':'🏦','Pinjaman Pribadi':'🤝',
+  'Zakat Maal':'🕌','Zakat Fitrah':'🌙',Infaq:'🤲',Sedekah:'❤️',Wakaf:'🏛️',Qurban:'🐄',
   Lainnya:'📌'
 };
 
@@ -854,10 +852,12 @@ window.setUser = u=>{
   R('bu-s').className='tb'+(u==='Suami'?' a-blue':'');
   R('bu-i').className='tb'+(u==='Istri'?' a-purple':'');
 };
-const TYPE_CLS={Pemasukan:'a-green',Pengeluaran:'a-red',Investasi:'a-orange',Agama:'a-teal',Keluarga:'a-pink',Cicilan:'a-indigo'};
+const TYPE_CLS={Pemasukan:'a-green',Pengeluaran:'a-red',Investasi:'a-orange',Agama:'a-purple',Keluarga:'a-pink',Cicilan:'a-indigo'};
 window.setType = t=>{
   curType=t;
-  ['Pemasukan','Pengeluaran','Investasi','Agama','Keluarga','Cicilan'].forEach((tp,i)=>{
+  ['Pemasukan','Pengeluaran','Investasi','Keluarga','Cicilan'].forEach((tp,i)=>{
+    R('bt-'+(i+1)).className='tb'+(t===tp?' '+TYPE_CLS[tp]:'');
+  });((tp,i)=>{
     R('bt-'+(i+1)).className='tb'+(t===tp?' '+TYPE_CLS[tp]:'');
   });
   buildCat();
@@ -961,7 +961,7 @@ function renderAll(){renderDashboard();renderRiwayat();renderPorto()}
 // ── RENDER DASHBOARD ──────────────────────────────────────────
 function renderDashboard(){
   const inc  = txs.filter(t=>t.type==='Pemasukan').reduce((s,t)=>s+t.amount,0);
-  const exp  = txs.filter(t=>['Pengeluaran','Agama','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
+  const exp  = txs.filter(t=>['Pengeluaran','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
   const zinv = txs.filter(t=>t.type==='Investasi').reduce((s,t)=>s+t.amount,0);
   const portoTotal = ['emas','sukuk','etf','deposito','cash'].reduce((s,k)=>s+getPortoValue(k),0);
   const saldo = inc - exp - zinv;
@@ -975,7 +975,7 @@ function renderDashboard(){
 
   [['Suami','s'],['Istri','i']].forEach(([u,k])=>{
     R(k+'In').textContent=fmt(txs.filter(t=>t.user===u&&t.type==='Pemasukan').reduce((s,t)=>s+t.amount,0));
-    R(k+'Out').textContent=fmt(txs.filter(t=>t.user===u&&['Pengeluaran','Agama','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0));
+    R(k+'Out').textContent=fmt(txs.filter(t=>t.user===u&&['Pengeluaran','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0));
     R(k+'Inv').textContent=fmt(txs.filter(t=>t.user===u&&t.type==='Investasi').reduce((s,t)=>s+t.amount,0));
   });
 
@@ -1140,7 +1140,7 @@ function renderRekapBulanan(){
     const m=String(i+1).padStart(2,'0');
     const mTx=yearTx.filter(t=>t.date&&t.date.slice(5,7)===m);
     const inc=mTx.filter(t=>t.type==='Pemasukan').reduce((s,t)=>s+t.amount,0);
-    const exp=mTx.filter(t=>['Pengeluaran','Agama','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
+    const exp=mTx.filter(t=>['Pengeluaran','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
     const inv=mTx.filter(t=>t.type==='Investasi').reduce((s,t)=>s+t.amount,0);
     return{idx:i,inc,exp,inv,net:inc-exp-inv,count:mTx.length};
   });
@@ -1207,7 +1207,7 @@ function renderRekapTahunan(){
   const curY=String(rekapYear);
   const curTx=txs.filter(t=>t.date&&t.date.startsWith(curY));
   const curIn=curTx.filter(t=>t.type==='Pemasukan').reduce((s,t)=>s+t.amount,0);
-  const curOut=curTx.filter(t=>['Pengeluaran','Agama','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
+  const curOut=curTx.filter(t=>['Pengeluaran','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
   const curInv=curTx.filter(t=>t.type==='Investasi').reduce((s,t)=>s+t.amount,0);
   const curNet=curIn-curOut-curInv;
   const months=new Set(curTx.map(t=>t.date?.slice(0,7))).size||1;
@@ -1220,11 +1220,11 @@ function renderRekapTahunan(){
     <div class="ann-card"><div class="ann-card-lbl">Saving Rate</div><div class="ann-card-val ${curNet>=0?'iv':'ev'}">${curIn>0?Math.round((curNet/curIn)*100):0}%</div></div>
   `;
   if(years.length===0){R('yearRows').innerHTML='<div class="empty"><div class="empty-ico">📅</div><div style="font-size:13px">Belum ada data</div></div>';return}
-  const maxOut=Math.max(...years.map(y=>txs.filter(t=>t.date&&t.date.startsWith(y)&&['Pengeluaran','Agama','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0)),1);
+  const maxOut=Math.max(...years.map(y=>txs.filter(t=>t.date&&t.date.startsWith(y)&&['Pengeluaran','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0)),1);
   R('yearRows').innerHTML=years.map(y=>{
     const yTx=txs.filter(t=>t.date&&t.date.startsWith(y));
     const yIn=yTx.filter(t=>t.type==='Pemasukan').reduce((s,t)=>s+t.amount,0);
-    const yOut=yTx.filter(t=>['Pengeluaran','Agama','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
+    const yOut=yTx.filter(t=>['Pengeluaran','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
     const yInv=yTx.filter(t=>t.type==='Investasi').reduce((s,t)=>s+t.amount,0);
     const yNet=yIn-yOut-yInv;
     const isCur=y===curY;
@@ -1247,7 +1247,7 @@ function renderRekapTahunan(){
 // ── DIAGRAM PENGELUARAN ───────────────────────────────────────
 let diagMode = 'tahunan';
 const DIAG_COLORS = ['#E74C3C','#E67E22','#F39C12','#27AE60','#16A085','#2980B9','#8E44AD','#E91E63','#795548','#607D8B'];
-const DIAG_TYPES  = ['Pengeluaran','Agama','Keluarga','Cicilan'];
+const DIAG_TYPES  = ['Pengeluaran','Keluarga','Cicilan'];
 
 window.switchDiag = mode => {
   diagMode = mode;
