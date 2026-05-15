@@ -268,6 +268,26 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .hl-amt{font-size:11px;font-weight:600}
 
 
+
+/* MONTH FILTER */
+.month-filter{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.month-select{flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--bg);outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;cursor:pointer;font-weight:500}
+.month-select:focus{border-color:var(--gold);background-color:#fff}
+.month-badge{background:var(--gold);color:#1A1400;border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;white-space:nowrap}
+
+/* DUAL SALDO CARDS */
+.dual-saldo{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.ds-card{background:var(--card);border-radius:var(--r);padding:14px 12px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.ds-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.ds-card.bulan::after{background:linear-gradient(90deg,var(--blue),transparent)}
+.ds-card.total::after{background:linear-gradient(90deg,var(--gold),transparent)}
+.ds-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.ds-period{font-size:10px;color:var(--gold);font-weight:600;margin-bottom:5px}
+.ds-val{font-size:15px;font-weight:700;font-family:'Playfair Display',serif}
+.ds-val.pos{color:var(--green)}.ds-val.neg{color:var(--red)}.ds-val.gold{color:var(--gold)}
+.ds-row{display:flex;justify-content:space-between;font-size:10px;margin-top:4px}
+.ds-row-l{color:var(--muted)}.ds-row-v{font-weight:600}
+
 /* DONUT CHART */
 .donut-wrap{display:flex;align-items:center;gap:16px;margin-bottom:12px}
 .donut-svg{flex-shrink:0}
@@ -364,14 +384,39 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="page active" id="pg-dashboard">
       <div class="rt-badge"><div class="rt-dot"></div> Realtime — update otomatis</div>
 
-      <!-- Net Worth Hero -->
+      <!-- Net Worth Hero (semua waktu) -->
       <div class="nw-hero">
         <div class="nw-label">Total Kekayaan (Net Worth)</div>
         <div class="nw-amt" id="netWorthAmt">Rp 0</div>
         <div class="nw-row">
-          <div class="nwi"><div class="nwi-l">↑ Pemasukan</div><div class="nwi-v iv" id="totIn">Rp 0</div></div>
-          <div class="nwi"><div class="nwi-l">↓ Pengeluaran</div><div class="nwi-v ev" id="totOut">Rp 0</div></div>
-          <div class="nwi"><div class="nwi-l">📈 Investasi</div><div class="nwi-v gv" id="totInv">Rp 0</div></div>
+          <div class="nwi"><div class="nwi-l">💰 Saldo Kas</div><div class="nwi-v iv" id="saldoKas">Rp 0</div></div>
+          <div class="nwi"><div class="nwi-l">📈 Portofolio</div><div class="nwi-v gv" id="totInv">Rp 0</div></div>
+        </div>
+      </div>
+
+      <!-- Filter Bulan Dashboard -->
+      <div class="month-filter">
+        <select class="month-select" id="dashMonthSel" onchange="onDashMonthChange(this.value)"></select>
+        <span class="month-badge" id="dashMonthBadge">Bulan Ini</span>
+      </div>
+
+      <!-- Dual Saldo: Bulan Ini vs Total -->
+      <div class="dual-saldo">
+        <div class="ds-card bulan">
+          <div class="ds-lbl">📅 Bulan Ini</div>
+          <div class="ds-period" id="dashBulanPeriod">–</div>
+          <div class="ds-val" id="dashBulanSaldo">Rp 0</div>
+          <div class="ds-row"><span class="ds-row-l">↑ Masuk</span><span class="ds-row-v iv" id="dashBulanIn">Rp 0</span></div>
+          <div class="ds-row"><span class="ds-row-l">↓ Keluar</span><span class="ds-row-v ev" id="dashBulanOut">Rp 0</span></div>
+          <div class="ds-row"><span class="ds-row-l">📈 Investasi</span><span class="ds-row-v ov" id="dashBulanInv">Rp 0</span></div>
+        </div>
+        <div class="ds-card total">
+          <div class="ds-lbl">🗓 Total Keseluruhan</div>
+          <div class="ds-period" style="color:var(--muted)">Semua waktu</div>
+          <div class="ds-val gold" id="dashTotalSaldo">Rp 0</div>
+          <div class="ds-row"><span class="ds-row-l">↑ Masuk</span><span class="ds-row-v iv" id="dashTotalIn">Rp 0</span></div>
+          <div class="ds-row"><span class="ds-row-l">↓ Keluar</span><span class="ds-row-v ev" id="dashTotalOut">Rp 0</span></div>
+          <div class="ds-row"><span class="ds-row-l">📈 Investasi</span><span class="ds-row-v ov" id="dashTotalInv">Rp 0</span></div>
         </div>
       </div>
 
@@ -565,6 +610,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
     <!-- RIWAYAT -->
     <div class="page" id="pg-riwayat">
+      <!-- Month dropdown -->
+      <div class="month-filter" style="margin-bottom:8px">
+        <select class="month-select" id="rwMonthSel" onchange="onRwMonthChange(this.value)"></select>
+        <span class="month-badge" id="rwMonthBadge">Bulan Ini</span>
+      </div>
       <div class="fb" id="filterBar">
         <button class="fc active" onclick="setFil('u','Semua',this)">Semua</button>
         <button class="fc" onclick="setFil('u','Suami',this)">👨 Suami</button>
@@ -722,6 +772,7 @@ let txs=[], porto={emas:{},sukuk:{},etf:{},deposito:{},cash:{}}, unsub=null;
 let curUser='Suami', curType='Pemasukan', amtRaw=0;
 let filU='Semua', filT='Semua';
 let rekapYear=new Date().getFullYear(), rekapMode='bulanan';
+let filterMonth = new Date().toISOString().slice(0,7); // YYYY-MM default current month
 let currentAuthUser=null, currentUserName='';
 
 // ── HELPERS ──────────────────────────────────────────────────
@@ -957,28 +1008,85 @@ function getPortoModal(key){
   return p.modal||0;
 }
 
+
+// ── MONTH HELPERS ────────────────────────────────────────────
+function getMonthLabel(ym){
+  const [y,m] = ym.split('-');
+  const BULAN_F=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  return BULAN_F[parseInt(m)-1]+' '+y;
+}
+function buildMonthOptions(selId, selectedVal){
+  // Get all months that have transactions + current month
+  const months = new Set(txs.map(t=>t.date?.slice(0,7)).filter(Boolean));
+  months.add(new Date().toISOString().slice(0,7));
+  const sorted = [...months].sort().reverse();
+  const el = document.getElementById(selId);
+  if(!el) return;
+  el.innerHTML = sorted.map(m=>`<option value="${m}" ${m===selectedVal?'selected':''}>${getMonthLabel(m)}</option>`).join('');
+}
+function txByMonth(ym){
+  return txs.filter(t=>t.date&&t.date.startsWith(ym));
+}
+
 // ── RENDER ALL ────────────────────────────────────────────────
-function renderAll(){renderDashboard();renderRiwayat();renderPorto()}
+function renderAll(){
+  buildMonthOptions('dashMonthSel', filterMonth);
+  buildMonthOptions('rwMonthSel', filterMonth);
+  renderDashboard();
+  renderRiwayat();
+  renderPorto();
+}
 
 // ── RENDER DASHBOARD ──────────────────────────────────────────
+window.onDashMonthChange = ym => {
+  filterMonth = ym;
+  const now = new Date().toISOString().slice(0,7);
+  R('dashMonthBadge').textContent = ym===now?'Bulan Ini':getMonthLabel(ym);
+  buildMonthOptions('rwMonthSel', ym);
+  renderDashboard();
+  renderRiwayat();
+};
+
 function renderDashboard(){
-  const inc  = txs.filter(t=>t.type==='Pemasukan').reduce((s,t)=>s+t.amount,0);
-  const exp  = txs.filter(t=>['Pengeluaran','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
-  const zinv = txs.filter(t=>t.type==='Investasi').reduce((s,t)=>s+t.amount,0);
+  // Total keseluruhan
+  const incAll  = txs.filter(t=>t.type==='Pemasukan').reduce((s,t)=>s+t.amount,0);
+  const expAll  = txs.filter(t=>['Pengeluaran','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
+  const invAll  = txs.filter(t=>t.type==='Investasi').reduce((s,t)=>s+t.amount,0);
+  const saldoAll = incAll - expAll - invAll;
   const portoTotal = ['emas','sukuk','etf','deposito','cash'].reduce((s,k)=>s+getPortoValue(k),0);
-  const saldo = inc - exp - zinv;
-  const netWorth = saldo + portoTotal;
+  const netWorth = saldoAll + portoTotal;
 
   R('netWorthAmt').textContent=fmt(netWorth);
   R('netWorthAmt').style.color=netWorth>=0?'var(--gold-l)':'var(--red)';
-  R('totIn').textContent=fmt(inc);
-  R('totOut').textContent=fmt(exp);
+  R('saldoKas').textContent=fmt(saldoAll);
   R('totInv').textContent=fmt(portoTotal);
 
+  // Bulan terpilih
+  const mTx  = txByMonth(filterMonth);
+  const incM  = mTx.filter(t=>t.type==='Pemasukan').reduce((s,t)=>s+t.amount,0);
+  const expM  = mTx.filter(t=>['Pengeluaran','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0);
+  const invM  = mTx.filter(t=>t.type==='Investasi').reduce((s,t)=>s+t.amount,0);
+  const saldoM = incM - expM - invM;
+
+  R('dashBulanPeriod').textContent = getMonthLabel(filterMonth);
+  R('dashBulanSaldo').textContent  = fmt(Math.abs(saldoM));
+  R('dashBulanSaldo').className    = 'ds-val '+(saldoM>=0?'pos':'neg');
+  R('dashBulanIn').textContent  = fmt(incM);
+  R('dashBulanOut').textContent = fmt(expM);
+  R('dashBulanInv').textContent = fmt(invM);
+
+  R('dashTotalSaldo').textContent = fmt(Math.abs(saldoAll));
+  R('dashTotalSaldo').className   = 'ds-val '+(saldoAll>=0?'gold':'neg');
+  R('dashTotalIn').textContent  = fmt(incAll);
+  R('dashTotalOut').textContent = fmt(expAll);
+  R('dashTotalInv').textContent = fmt(invAll);
+
+  // Kontribusi Suami/Istri - bulan terpilih
+  const mTxStat = txByMonth(filterMonth);
   [['Suami','s'],['Istri','i']].forEach(([u,k])=>{
-    R(k+'In').textContent=fmt(txs.filter(t=>t.user===u&&t.type==='Pemasukan').reduce((s,t)=>s+t.amount,0));
-    R(k+'Out').textContent=fmt(txs.filter(t=>t.user===u&&['Pengeluaran','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0));
-    R(k+'Inv').textContent=fmt(txs.filter(t=>t.user===u&&t.type==='Investasi').reduce((s,t)=>s+t.amount,0));
+    R(k+'In').textContent=fmt(mTxStat.filter(t=>t.user===u&&t.type==='Pemasukan').reduce((s,t)=>s+t.amount,0));
+    R(k+'Out').textContent=fmt(mTxStat.filter(t=>t.user===u&&['Pengeluaran','Keluarga','Cicilan'].includes(t.type)).reduce((s,t)=>s+t.amount,0));
+    R(k+'Inv').textContent=fmt(mTxStat.filter(t=>t.user===u&&t.type==='Investasi').reduce((s,t)=>s+t.amount,0));
   });
 
   // Porto mini cards
@@ -1007,9 +1115,9 @@ function renderDashboard(){
     dashPortoEl.style.display='block';
   }
 
-  // Category breakdown (all non-income types)
+  // Category breakdown - bulan terpilih
   const typeMap={};
-  txs.filter(t=>t.type!=='Pemasukan').forEach(t=>{
+  txByMonth(filterMonth).filter(t=>t.type!=='Pemasukan').forEach(t=>{
     typeMap[t.type]=(typeMap[t.type]||0)+t.amount;
   });
   const totalOut=Object.values(typeMap).reduce((s,v)=>s+v,0);
@@ -1026,9 +1134,10 @@ function renderDashboard(){
     }).join('');
   } else catCard.style.display='none';
 
+  const mTxRecent = txByMonth(filterMonth);
   const de=R('dashEmpty'),rl=R('recentList');
-  if(txs.length===0){de.style.display='';rl.innerHTML=''}
-  else{de.style.display='none';rl.innerHTML=txItems(txs.slice(0,5),false)}
+  if(mTxRecent.length===0){de.style.display='';rl.innerHTML=''}
+  else{de.style.display='none';rl.innerHTML=txItems(mTxRecent.slice(0,5),false)}
 }
 
 // ── RENDER PORTO ──────────────────────────────────────────────
@@ -1080,8 +1189,19 @@ function renderPorto(){
 }
 
 // ── RENDER RIWAYAT ────────────────────────────────────────────
+window.onRwMonthChange = ym => {
+  filterMonth = ym;
+  const now = new Date().toISOString().slice(0,7);
+  R('rwMonthBadge').textContent = ym===now?'Bulan Ini':getMonthLabel(ym);
+  R('dashMonthBadge').textContent = ym===now?'Bulan Ini':getMonthLabel(ym);
+  buildMonthOptions('dashMonthSel', ym);
+  renderDashboard();
+  renderRiwayat();
+};
+
 function renderRiwayat(){
   const fil=txs.filter(t=>{
+    if(!t.date||!t.date.startsWith(filterMonth))return false;
     if(filU!=='Semua'&&t.user!==filU)return false;
     if(filT!=='Semua'&&t.type!==filT)return false;
     return true;
@@ -1372,6 +1492,9 @@ function renderDiagram(){
 R('dateIn').value=new Date().toISOString().slice(0,10);
 R('rekapYear').textContent=rekapYear;
 buildCat();
+// Set initial month badge
+const nowYM = new Date().toISOString().slice(0,7);
+filterMonth = nowYM;
 </script>
 </body>
 </html>
